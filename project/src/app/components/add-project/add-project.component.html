@@ -330,7 +330,7 @@
         <ng-container matColumnDef="x" >
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let element" style="width: 50px">
-            <mat-icon aria-hidden="false" >clear</mat-icon>
+            <mat-icon aria-hidden="false" (click)="deleteLocation(element.countyId, element.districtId)">clear</mat-icon>
           </td>
         </ng-container>
 

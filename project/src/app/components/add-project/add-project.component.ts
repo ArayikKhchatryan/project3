@@ -309,6 +309,33 @@ export class AddProjectComponent implements OnInit {
     }
   }
 
+  deleteLocation(countyId: number, districtId: number) {
+    const dialogRef = this.dialog.open(DeleteProjectComponent, {
+      data: {boolean: Boolean}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        let locations2 = [];
+        for (let i of this.locationsArr) {
+          if (i.districtId != districtId || i.countyId != countyId) {
+            locations2.push(i);
+          }
+        }
+        this.locationsArr = locations2;
+
+
+        // this.sectors = this.sectorsAll;
+        // for (let i of this.sectorsArr) {
+        //   this.deleteSectorName(i.sector, i.percent);
+        // }
+
+      }
+
+    });
+
+  }
+
 
   saveProject() {
     const obj = this.form1.value;
