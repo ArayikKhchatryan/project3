@@ -158,6 +158,7 @@ export class AddProjectComponent implements OnInit {
         this.getDuration();
         this.isReady = true;
 
+
         // alert(this.getPercentSum());
 
         // alert(this.form1.value.startDate);
@@ -183,18 +184,25 @@ export class AddProjectComponent implements OnInit {
           }
         }
         this.sectorsArr = sectors2;
+
+
         this.sectors = this.sectorsAll;
         for (let i of this.sectorsArr) {
-          this.deleteSectorName(i.sector);
+          this.deleteSectorName(i.sector, i.percent);
         }
+
+
         // alert(i.sector);
       }
 
     });
   }
 
-  deleteSectorName(sectorId: number, percent?: any) {
-    if (sectorId && percent && percent >= 0 && percent <= 100 && (+this.getPercentSum() + +this.sectorsForm.value.percent) < 100) {
+  deleteSectorName(sectorId: number, percent?: any, b?: boolean) {
+    if (b) {
+      this.sectorsAdd();
+    }
+    if (sectorId && percent && percent > 0 && percent <= 100 && (+this.getPercentSum() + +this.sectorsForm.value.percent) < 100) {
       // alert(sectorId);
       let sectors2 = [];
       for (let i of this.sectors) {
@@ -219,15 +227,14 @@ export class AddProjectComponent implements OnInit {
       this.aa = true;
       this.bb = false;
 
-      this.sectorsForm.invalid;
-    } else if (this.sectorsForm.value.percent >= 0 && this.sectorsForm.value.percent <= 100) {
+      // this.sectorsForm.invalid;
+    } else if (this.sectorsForm.value.percent > 0 && this.sectorsForm.value.percent <= 100) {
       // alert(false)
       this.sectorsArr = [this.sectorsForm.value, ...this.sectorsArr];
       this.sectorsForm.reset();
       this.aa = false;
       this.bb = false;
-    }
-    else {
+    } else {
       this.bb = true;
       this.aa = false;
     }

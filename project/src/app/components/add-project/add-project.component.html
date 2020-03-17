@@ -163,7 +163,7 @@
 
     <div style="margin-top: 30px">
 
-      <form [formGroup]="sectorsForm" (ngSubmit)="sectorsAdd()">
+      <form [formGroup]="sectorsForm" >
         <div
           style="margin-top: 34px; margin-left:  155px; background-color: white; width: 1240px; padding: 22px; padding-bottom: 50px">
           <p style="font-size: 16px">Sectors (in line table)</p><br>
@@ -196,7 +196,7 @@
               <ng-container matColumnDef="x" >
                 <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell *matCellDef="let element" style="width: 50px">
-                  <mat-icon aria-hidden="false" (click)="deleteSector(element.sector)">clear</mat-icon>
+                  <mat-icon aria-hidden="false" (click)="deleteSector( element.sector)">clear</mat-icon>
                 </td>
               </ng-container>
 
@@ -251,7 +251,7 @@
           <!--      <ol>-->
           <!--        <li *ngFor="let i of sectorsArr">{{i.sectorName}}, {{i.percent}}</li>-->
           <!--      </ol>-->
-          <div style="margin-top: 20px">
+          <div style="margin-top: 20px" *ngIf="sectors?.length">
             <!--          <select style="width: 270px" formControlName="sector" appInput>-->
             <!--            <option *ngFor="let sector of sectors" [value]="sector.id">{{sector.name}}</option>-->
             <!--          </select>-->
@@ -273,7 +273,7 @@
             </mat-form-field>
 
 
-            <button class="sectorButton" mat-button type="submit" (click)="deleteSectorName(sector.value, percent.value)">ADD</button>
+            <button class="sectorButton" mat-button type="submit" (click)="deleteSectorName( sector.value, percent.value, true)">ADD</button>
 
             <p *ngIf="aa" style="color: red">tokosneri gumary petq e poqr lini 100 ic. ayn karox e linel havasar (0:{{100 - +getPercentSum()}}) mijakayqic tvi</p>
             <p *ngIf="bb" style="color: red">tokos handisanum e miayn tiv (0:100) mijakayqic</p>

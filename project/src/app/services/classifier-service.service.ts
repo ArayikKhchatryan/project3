@@ -56,11 +56,11 @@ export class ClassifierServiceService {
   }
 
   getImpStatusClassifier(): Observable<ClassifiersModel[]>{
-    return of(this.implementation_Status).pipe(delay(5000));
+    return of(this.implementation_Status).pipe(delay(3000));
   }
 
   getSectorsClassifier():  Observable<ClassifiersModel[]>{
-    return of(this.sectors_classifier).pipe(delay(5000));
+    return of(this.sectors_classifier).pipe(delay(3000));
   }
 
   getSectorName(_id): string{
