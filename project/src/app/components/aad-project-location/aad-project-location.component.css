@@ -1,0 +1,11 @@
+.sectorButton{
+  width: 85px;
+  height: 35px;
+  color: white;
+  background-color: rgba(111, 172, 40, 1);
+  margin-left: 110px;
+}
+
+mat-form-field{
+  margin-top: 35px;
+}
