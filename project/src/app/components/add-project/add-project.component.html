@@ -3,7 +3,7 @@
 </ng-container>
 
 <ng-container *ngIf="isReady">
-  <form [formGroup]="form1" (ngSubmit)="onSubmit()">
+  <form [formGroup]="form1">
     <div style="position: fixed; color: white; z-index: 1000">
 
       <div style="position:fixed;">
@@ -274,6 +274,9 @@
 
 
             <button class="sectorButton" mat-button type="submit" (click)="deleteSectorName(sector.value, percent.value)">ADD</button>
+
+            <p *ngIf="aa" style="color: red">tokosneri gumary petq e poqr lini 100 ic. ayn karox e linel havasar (0:{{100 - +getPercentSum()}}) mijakayqic tvi</p>
+            <p *ngIf="bb" style="color: red">tokos handisanum e miayn tiv (0:100) mijakayqic</p>
           </div>
         </div>
       </form>

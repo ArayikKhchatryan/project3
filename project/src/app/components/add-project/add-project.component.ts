@@ -50,7 +50,18 @@ export class AddProjectComponent implements OnInit {
 
   private _duration: number = null;
 
-  aa: boolean;
+  aa: boolean = false;
+
+  bb: boolean = false;
+
+
+  displayedColumns: string[] = ['a', 'b', 'x'];
+
+  displayedColumns2: string[] = ['a', 'b', 'c', 'x'];
+
+  countyId: string;
+  percent: number;
+  districtId: string;
 
   isReady: Boolean = false;
 
@@ -66,10 +77,6 @@ export class AddProjectComponent implements OnInit {
   //   this.sectorsForm.value.percent = null;
   // }
 
-
-  onSubmit() {
-    console.log(this.form1.value);
-  }
 
   constructor(private route?: ActivatedRoute, private projectService?: ProjectService, private cs?: ClassifierServiceService, private fb?: FormBuilder, public dialog?: MatDialog) {
 
@@ -99,17 +106,20 @@ export class AddProjectComponent implements OnInit {
   }
 
 
-  getSectors(res){
+  getSectors(res) {
     this.sectorsArr = [];
-    for(let i of res){
-      for(let j of this.sectorsArr){
-        if(i.sector != j.sector){
+    for (let i of res) {
+      for (let j of this.sectorsArr) {
+        if (i.sector != j.sector) {
 
         }
       }
     }
   }
 
+  getPercentSum() {
+    return this.sectorsArr.reduce((previousValue, item) => +previousValue + +item.percent, 0);
+  }
 
   ngOnInit(): void {
     // this.projectService.getLocations().subscribe(res => {
@@ -148,13 +158,14 @@ export class AddProjectComponent implements OnInit {
         this.getDuration();
         this.isReady = true;
 
+        // alert(this.getPercentSum());
+
         // alert(this.form1.value.startDate);
         // alert(this.form1.value.endDate);
         // alert(this.form1.value.projectTitle)
       }, ErrorMethod.getError);
     }
   }
-
 
 
   deleteSector(sectorId) {
@@ -183,7 +194,7 @@ export class AddProjectComponent implements OnInit {
   }
 
   deleteSectorName(sectorId: number, percent?: any) {
-    if (sectorId && percent && percent >=0 && percent <= 100) {
+    if (sectorId && percent && percent >= 0 && percent <= 100 && (+this.getPercentSum() + +this.sectorsForm.value.percent) < 100) {
       // alert(sectorId);
       let sectors2 = [];
       for (let i of this.sectors) {
@@ -200,12 +211,25 @@ export class AddProjectComponent implements OnInit {
 
 
   sectorsAdd() {
-    if(this.sectorsForm.value.percent < 0 || this.sectorsForm.value.percent > 100){
+    // alert(+this.getPercentSum() + +this.sectorsForm.value.percent);
+    // alert(this.getPercentSum())
+    if (this.sectorsForm.value.percent < 0 || this.sectorsForm.value.percent > 100 || (+this.getPercentSum() + +this.sectorsForm.value.percent) > 100 || !this.sectorsForm.value.sector) {
+      // alert(this.sectorsForm.value.percent < 0 || this.sectorsForm.value.percent > 100 && (this.getPercentSum() + this.sectorsForm.value.percent) > 100);
+      // alert(true)
       this.aa = true;
-    }
-    else if (this.sectorsForm.value.sector && this.sectorsForm.value.percent) {
+      this.bb = false;
+
+      this.sectorsForm.invalid;
+    } else if (this.sectorsForm.value.percent >= 0 && this.sectorsForm.value.percent <= 100) {
+      // alert(false)
       this.sectorsArr = [this.sectorsForm.value, ...this.sectorsArr];
       this.sectorsForm.reset();
+      this.aa = false;
+      this.bb = false;
+    }
+    else {
+      this.bb = true;
+      this.aa = false;
     }
   }
 
@@ -221,13 +245,6 @@ export class AddProjectComponent implements OnInit {
     return this.cs.getDistrictNameById(districtId, parentId);
   }
 
-  displayedColumns: string[] = ['a', 'b', 'x'];
-
-  displayedColumns2: string[] = ['a', 'b', 'c', 'x'];
-
-  countyId: string;
-  percent: number;
-  districtId: string;
 
   openDialog(): void {
     const dialogRef = this.dialog.open(AadProjectLocationComponent, {
@@ -238,7 +255,8 @@ export class AddProjectComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       // alert(result);
       if (result.countyId && result.districtId && result.percent) {
-        this.locationsArr.push(result);
+        // this.locationsArr.push(result);
+        this.locationsArr = [result, ...this.locationsArr];
         // console.log('-----------------------');
         // console.log(this.locationsArr);
       }
