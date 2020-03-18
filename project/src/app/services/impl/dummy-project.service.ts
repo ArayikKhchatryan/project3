@@ -76,6 +76,10 @@ export class DummyProjectService extends ProjectService {
     return of(new Response(true)).pipe(delay(2000));
   }
 
+  getNewProject(): Observable<ProjectModel> {
+    return of(new ProjectModel()).pipe(delay(2000));
+  }
+
   // addLocation(location: LocationModel): Observable<Response> {
   //   this.projectLocations.push(location);
   //   return of(new Response(true));
@@ -85,7 +89,4 @@ export class DummyProjectService extends ProjectService {
   //   return of(this.projectLocations);
   // }
 
-  getNewProject(){
-    return new ProjectModel();
-  }
 }

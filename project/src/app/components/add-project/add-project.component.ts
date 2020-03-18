@@ -11,6 +11,8 @@ import {ProjectService} from '../../services/project.service';
 import {LocationModel} from '../../model/location.model';
 import {ClassifiersModel} from '../../model/classifiers.model';
 import {DeleteProjectComponent} from '../delete-project/delete-project.component';
+import {Observable} from 'rxjs';
+import {MatDatepickerInputEvent} from '@angular/material/datepicker';
 
 
 @Component({
@@ -54,6 +56,7 @@ export class AddProjectComponent implements OnInit {
 
   bb: boolean = false;
 
+  idIncorrect: boolean = false;
 
   displayedColumns: string[] = ['a', 'b', 'x'];
 
@@ -71,13 +74,6 @@ export class AddProjectComponent implements OnInit {
   });
 
 
-  // a: Boolean = false;
-
-  // aa(){
-  //   this.sectorsForm.value.percent = null;
-  // }
-
-
   constructor(private route?: ActivatedRoute, private projectService?: ProjectService, private cs?: ClassifierServiceService, private fb?: FormBuilder, public dialog?: MatDialog) {
 
   }
@@ -91,6 +87,7 @@ export class AddProjectComponent implements OnInit {
       implementationStatus: new FormControl(this.project.impStatusId, [Validators.required, Validators.min(1)]),
       startDate: new FormControl(this.project.startDate, Validators.required),
       endDate: new FormControl(this.project.endDate),
+
 
       // sectors:  this.fb.group({
       //   percent: new FormControl(),
@@ -122,9 +119,6 @@ export class AddProjectComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.projectService.getLocations().subscribe(res => {
-    //   this.locationsArr = res;
-    // });
 
     this.cs.getSectorsClassifier().subscribe((res) => {
       this.sectors = this.sectorsAll = res;
@@ -142,37 +136,50 @@ export class AddProjectComponent implements OnInit {
 
     this.id = Number(this.route.snapshot.paramMap.get('id'));
 
+    let obs$: Observable<ProjectModel> = null;
+
     if (this.id < 0) {
+      obs$ = this.projectService.getNewProject();
       this.project = new ProjectModel();
       this.addForm();
       this.isReady = true;
+    } else if (this.projectService?.getProjectById(this.id) == undefined) {
+      this.idIncorrect = true;
     } else {
+      this.projectService?.getProjectById(this.id);
       this.projectService?.getProjectById(this.id)?.subscribe(res => {
         // alert('Id incorrect');
+
         this.project = res;
         this.sectorsArr = this.project.sectors;
         this.locationsArr = this.project.locations;
         console.log(this.project.sectors);
 
         this.addForm();
-        this.getDuration();
+        this.onDateChange();
         this.isReady = true;
-
-
-        // alert(this.getPercentSum());
-
-        // alert(this.form1.value.startDate);
-        // alert(this.form1.value.endDate);
-        // alert(this.form1.value.projectTitle)
+        this.newDate = res.updateProject;
       }, ErrorMethod.getError);
     }
+
+    // obs$.subscribe((res) => {
+    //   // alert('Id incorrect');
+    //   this.project = res;
+    //   this.sectorsArr = this.project.sectors;
+    //   this.locationsArr = this.project.locations;
+    //   console.log(this.project.sectors);
+    //
+    //   this.addForm();
+    //   this.onDateChange();
+    //   this.isReady = true;
+    //   this.newDate = res.updateProject;
+    // });
   }
 
 
   deleteSector(sectorId) {
     const dialogRef = this.dialog.open(DeleteProjectComponent, {
       // width: '200px',
-      data: {boolean: Boolean}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -256,7 +263,7 @@ export class AddProjectComponent implements OnInit {
   openDialog(): void {
     const dialogRef = this.dialog.open(AadProjectLocationComponent, {
       width: '400px',
-      data: {countyId: this.countyId, districtId: this.districtId, percent: this.percent}
+      data: {locations: this.locationsArr}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -272,25 +279,24 @@ export class AddProjectComponent implements OnInit {
   }
 
 
-  getDuration() {
+  onDateChange($event?: MatDatepickerInputEvent<unknown>) {
     if (this.form1.value.startDate && this.form1.value.endDate) {
       let startDate = new Date(this.form1.value.startDate).getTime();
       let endDate = new Date(this.form1.value.endDate).getTime();
       let tarb = endDate - startDate;
       let orTarb = tarb / (60 * 60 * 24 * 1000) + 1;
-      // if(this.form1.value.duration<0){
-      //   this.form1.value.endDate.invalid;
-      // }
-      // else{
-      this._duration = Math.floor(orTarb);
-      // alert(this._duration);
-      // return Math.floor(orTarb);
-      // }
-
-
-      // alert(this.form1.value.duration);
-      // this.form1.value.description = 'aa';
+      if (orTarb <= 0) {
+        this.form1.value.stratDate = null;
+        this.form1.value.endDate = null;
+        this.duration = null;
+      } else {
+        this._duration = Math.floor(orTarb);
+      }
+    } else {
+      this.duration = null;
     }
+
+
     // else if (this.form1.value.startDate && this.form1.value.duration) {
     //
     //   // this.form1.value.endDate = this.form1.value.startDate + this.form1.value.duration;
@@ -304,8 +310,29 @@ export class AddProjectComponent implements OnInit {
   getEndDate() {
     if (this.form1.value.startDate && this._duration) {
 
-      this.form1.value.endDate = new Date(this.form1.value.startDate);
-      this.form1.value.endDate.setDate(Number(this.form1.value.startDate.getDate()) + Number(this._duration) - 1);
+      if (this.duration > 0) {
+        this.form1.value.endDate = new Date(this.form1.value.startDate);
+        this.form1.value.endDate.setDate(Number(this.form1.value.startDate.getDate()) + Number(this._duration) - 1);
+        this.project.endDate = this.form1.value.endDate;
+      } else {
+        // this.project.endDate = null;
+        // this.project.startDate = null;
+        this.form1.value.stratDate = null;
+        this.form1.value.endDate = null;
+        this.duration = null;
+      }
+    }
+
+    else if (this.form1.value.endDate && this._duration) {
+      if (this.duration > 0) {
+        this.form1.value.startDate = new Date(this.form1.value.endDate);
+        this.form1.value.startDate.setDate(Number(this.form1.value.endDate.getDate()) - Number(this._duration) + 1);
+        this.project.startDate = this.form1.value.startDate;
+      } else {
+        this.form1.value.stratDate = null;
+        this.form1.value.endDate = null;
+        this.duration = null;
+      }
     }
   }
 
@@ -339,7 +366,7 @@ export class AddProjectComponent implements OnInit {
 
   saveProject() {
     const obj = this.form1.value;
-    this.project = new ProjectModel(obj.projectCode, obj.projectTitle, obj.description, obj.implementationStatus, obj.startDate, obj.endDate, this.sectorsArr, this.locationsArr);
+    this.project = new ProjectModel(obj.projectCode, obj.projectTitle, obj.description, obj.implementationStatus, obj.startDate, obj.endDate, this.sectorsArr, this.locationsArr, this.newDate);
 
     if (this.id < 0) {
       // console.log(this.project);
@@ -353,12 +380,14 @@ export class AddProjectComponent implements OnInit {
       this.projectService.addProject(this.project);
     } else {
       this.project.id = this.id;
+      // this.project?.newDate = this.newDate;
+      this.project.updateProject = this.newDate;
       this.projectService.updateProject(this.project);
     }
     this.newDate = new Date();
   }
 
-newDate;
+  newDate;
 }
 
 

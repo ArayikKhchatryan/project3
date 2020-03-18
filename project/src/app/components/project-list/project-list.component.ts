@@ -23,8 +23,7 @@ export class ProjectListComponent implements OnInit {
 
   isReady: Boolean = false;
 
-  // dataSource2;
-  constructor(private dummyProjectService: ProjectService,  public dialog?: MatDialog) {
+  constructor(private dummyProjectService: ProjectService, public dialog?: MatDialog) {
   }
 
   // @ViewChild(MatSort, {static: true}) sort: MatSort;
@@ -34,17 +33,10 @@ export class ProjectListComponent implements OnInit {
       this.dataSource = res;
       console.log(res);
       this.isReady = true;
-
-      // this.dataSource2 = new MatTableDataSource(res);
     }, ErrorMethod.getError);
-    // alert(this.dummyProjectService.projectViewList);
-
-    // this.dataSource2.sort = this.sort;
-    // this.dummyProjectService.getProjectViewList();
-
   }
 
-  displayedColumns: string[] = ['name', '444444'];
+  displayedColumns: string[] = ['projectName', 'delete'];
 
   deleteProject(id) {
     const dialogRef = this.dialog.open(DeleteProjectComponent, {
@@ -53,39 +45,18 @@ export class ProjectListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-        if(result){
-          this.dummyProjectService.deleteProjectById(id).subscribe(res => {
-            // console.log(res);
-            if(res.status){
-              this.ngOnInit();
-            }
-            else {
-              alert("can not delete")
-            }
-          });
+      if (result) {
+        this.dummyProjectService.deleteProjectById(id).subscribe(res => {
+          // console.log(res);
+          if (res.status) {
+            this.ngOnInit();
+          } else {
+            alert('can not delete');
+          }
+        });
       }
 
     });
 
-
-
-
-    // this.dummyProjectService.deleteProjectById(id).subscribe(res => {
-    //   // console.log(res);
-    //   if(res.status){
-    //      this.ngOnInit();
-    //    }
-    //    else {
-    //      alert("can not delete")
-    //    }
-    //  });
-
-
-
-
-
-    // displayedColumns: string[] = [ 'name','444444'];
   }
-
-
 }

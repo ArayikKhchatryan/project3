@@ -22,7 +22,7 @@ export abstract class ProjectService {
 
   // abstract getLocations(): Observable<LocationModel[]>;
 
-  getNewProject(){};
+  abstract getNewProject(): Observable<ProjectModel>;
 
 }
 
