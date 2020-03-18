@@ -28,6 +28,14 @@ export class ClassifierServiceService {
     new ChildClassifierModel(2, 2, 'Tver'), new ChildClassifierModel(2, 3, 'Stavropol'), new ChildClassifierModel(3, 1, 'California')]
 
 
+  getSectorName(_id): string{
+    for(let obj of this.sectors_classifier){
+      if(obj.id == _id){
+        return obj.name;
+      }
+    }
+  }
+
   getCountyNameById(_id): string{
     for(let obj of this.county_classifier){
       if(obj.id == _id){
@@ -36,23 +44,9 @@ export class ClassifierServiceService {
     }
   }
 
-  getDistrictNameById(_id, parentId): string{
-    let dist = this.getDistrictByParentId(parentId);
-    for(let obj of dist){
-      if(obj.id == _id){
-        return obj.name;
-      }
-    }
-  }
 
-  getDistrictByParentId(id: number): ChildClassifierModel[]{
-    let arr: ChildClassifierModel[] = [];
-    for(let district of this.district_classifier){
-      if(district.parentId == id){
-        arr.push(district);
-      }
-    }
-    return arr;
+  getDistricts(): Observable<ChildClassifierModel[]>{
+    return of(this.district_classifier);
   }
 
   getImpStatusClassifier(): Observable<ClassifiersModel[]>{
@@ -63,16 +57,23 @@ export class ClassifierServiceService {
     return of(this.sectors_classifier).pipe(delay(3000));
   }
 
-  getSectorName(_id): string{
-    for(let obj of this.sectors_classifier){
-      if(obj.id == _id){
-        return obj.name;
-      }
-    }
-  }
-
   getCountyClassifier(): Observable<ClassifiersModel[]>{
     return of(this.county_classifier);
   }
+
+  // getCountyes(): Observable<ClassifiersModel[]>{
+  //   return of(this.county_classifier)
+  // }
+
+  // getDistrictByParentId(id: number):  Observable<ChildClassifierModel[]>{
+  //   let arr: ChildClassifierModel[] = [];
+  //   for(let district of this.district_classifier){
+  //     if(district.parentId == id){
+  //       arr.push(district);
+  //     }
+  //   }
+  //   return of(arr).pipe(delay(3000));
+  // }
+
 
 }

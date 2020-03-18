@@ -66,6 +66,8 @@ export class AddProjectComponent implements OnInit {
   percent: number;
   districtId: string;
 
+  districts: any[] = [];
+
   isReady: Boolean = false;
 
   sectorsForm = this.fb.group({
@@ -114,11 +116,22 @@ export class AddProjectComponent implements OnInit {
     }
   }
 
+
+  getDistrictNameById(_id: number, parentId?: number): string {
+    // alert(parentId);
+    const dist = this.districts.find(district => district.id === _id && district.parentId === parentId);
+    return dist ? dist.name : '';
+  }
+
   getPercentSum() {
     return this.sectorsArr.reduce((previousValue, item) => +previousValue + +item.percent, 0);
   }
 
   ngOnInit(): void {
+
+    this.cs.getDistricts().subscribe(res => {
+      this.districts = res;
+    });
 
     this.cs.getSectorsClassifier().subscribe((res) => {
       this.sectors = this.sectorsAll = res;
@@ -255,15 +268,20 @@ export class AddProjectComponent implements OnInit {
     return this.cs.getCountyNameById(countyId);
   }
 
-  getDistrictNameById(districtId: number, parentId: number) {
-    return this.cs.getDistrictNameById(districtId, parentId);
-  }
+
+  // getCountyNameById(_id): string{
+  //   for(let obj of this.county_classifier){
+  //     if(obj.id == _id){
+  //       return obj.name;
+  //     }
+  //   }
+  // }
 
 
   openDialog(): void {
     const dialogRef = this.dialog.open(AadProjectLocationComponent, {
       width: '400px',
-      data: {locations: this.locationsArr}
+      data: {locations: this.locationsArr, districts: this.districts}
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -271,6 +289,7 @@ export class AddProjectComponent implements OnInit {
       if (result.countyId && result.districtId && result.percent) {
         // this.locationsArr.push(result);
         this.locationsArr = [result, ...this.locationsArr];
+        console.log(this.locationsArr);
         // console.log('-----------------------');
         // console.log(this.locationsArr);
       }
@@ -321,9 +340,7 @@ export class AddProjectComponent implements OnInit {
         this.form1.value.endDate = null;
         this.duration = null;
       }
-    }
-
-    else if (this.form1.value.endDate && this._duration) {
+    } else if (this.form1.value.endDate && this._duration) {
       if (this.duration > 0) {
         this.form1.value.startDate = new Date(this.form1.value.endDate);
         this.form1.value.startDate.setDate(Number(this.form1.value.endDate.getDate()) - Number(this._duration) + 1);

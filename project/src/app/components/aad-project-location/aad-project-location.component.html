@@ -34,8 +34,11 @@
 
   <div mat-dialog-actions>
 
+    <p *ngIf="locationInvalid" style="color: red" class="alert alert-danger">location avelacnelu hamar lracreq bolor partadir dashtery. durs galu hamar sexmeq X</p>
 
-    <button mat-button class="sectorButton" [mat-dialog-close]="selected" cdkFocusInitial >Add</button>
+    <p *ngIf="percentIncorrect" style="color: red" class="alert alert-danger">tokosneri gumary petq e lini tiv (0:100] mijakayqic</p>
+
+    <button mat-button class="sectorButton"  cdkFocusInitial (click)="locationAdd()">Add</button>
     <!--  <button mat-button [mat-dialog-close]="data.animal" cdkFocusInitial>Ok</button>-->
   </div>
 <!--</form>-->
