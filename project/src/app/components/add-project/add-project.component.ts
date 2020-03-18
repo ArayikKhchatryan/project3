@@ -355,9 +355,10 @@ export class AddProjectComponent implements OnInit {
       this.project.id = this.id;
       this.projectService.updateProject(this.project);
     }
+    this.newDate = new Date();
   }
 
-
+newDate;
 }
 
 
