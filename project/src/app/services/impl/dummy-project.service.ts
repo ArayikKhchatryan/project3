@@ -39,7 +39,7 @@ export class DummyProjectService extends ProjectService {
         return of(project).pipe(delay(2000));
       }
     }
-    return undefined;
+    return of(null);
   }
 
   getProjects(): Observable<ProjectViewModel[]> {

@@ -34,8 +34,8 @@
           style="background-color:  rgba(111, 172, 40, 1); " mat-button class="headerButton" routerLink="/projects">
           CANCEL
         </button>
-        <button mat-raised-button [disabled]="!form1.valid" [title]="form1.valid ? 'Save' : 'Fill all required fields'"
-                class="headerButton" type="submit" (click)="saveProject()">
+        <button mat-raised-button  [title]="form1.valid ? 'Save' : 'Fill all required fields'"
+                class="headerButton" type="submit" (click)="saveProject(form1.valid)">
           SAVE
         </button>
 
@@ -117,7 +117,7 @@
 
     <div name="sectors" style="margin-top: 30px">
 
-      <form [formGroup]="sectorsForm">
+      <ng-form  formGroupName="sectorsForm">
         <div
           style="margin-top: 34px; margin-left:  155px; background-color: white; width: 1240px; padding: 22px; padding-bottom: 50px">
           <p style="font-size: 16px">Sectors (in line table)</p><br>
@@ -184,7 +184,7 @@
 
           </div>
         </div>
-      </form>
+      </ng-form>
 
 
     </div>
