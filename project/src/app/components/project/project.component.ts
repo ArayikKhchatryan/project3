@@ -11,7 +11,7 @@ import {ProjectService} from '../../services/project.service';
 import {LocationModel} from '../../model/location.model';
 import {ClassifiersModel} from '../../model/classifiers.model';
 import {DeleteProjectComponent} from '../delete-project/delete-project.component';
-import {Observable} from 'rxjs';
+import {Observable, of, zip} from 'rxjs';
 import {MatDatepickerInputEvent} from '@angular/material/datepicker';
 import {ChildClassifierModel} from '../../model/child-classifier.model';
 
@@ -127,71 +127,42 @@ export class ProjectComponent implements OnInit {
   ngOnInit(): void {
 
 
+    this.id = +(this.route.snapshot.paramMap.get('id'));
+    this.newProject = this.id < 1;
 
+    zip(this.cs.getDistricts(), this.cs.getSectorsClassifier(), this.cs.getImpStatusClassifier(), this.cs.getCountyClassifier(),
+      this.newProject ? of(new ProjectModel()) : this.projectService?.getProjectById(this.id)).subscribe(res => {
 
+      this.districts = res[0];
 
-    
-    this.cs.getDistricts().subscribe(res => {
-      this.districts = res;
-    });
+      this.sectors = this.sectorsAll = res[1];
 
-    this.cs.getSectorsClassifier().subscribe((res) => {
-      this.sectors = this.sectorsAll = res;
-      for (let i of this.sectorsArr) {
-        this.deleteSectorName(i.sector, i.percent);
+      this.imp_statuses = res[2];
+
+      this.counties = res[3];
+
+      this.project = res[4];
+
+      if (!this.project) {
+        this.idIncorrect = true;
+      } else {
+        this.addForm();
+        if (!this.newProject) {
+          this.sectorsArr = this.project?.sectors;
+          for (let i of this.sectorsArr) {
+            this.deleteSectorName(i.sector, i.percent);
+          }
+          this.locationsArr = this.project?.locations;
+          this.onDateChange();
+          this.updateProject = res[4].updateProject;
+          this.createProject = res[4].createProject;
+          this.locationsPercentSumVal = this.locationsPercentSum();
+        }
+
+        this.isReady = true;
       }
     });
 
-
-    this.cs.getImpStatusClassifier().subscribe(res => {
-      this.imp_statuses = res;
-    });
-
-    this.cs.getCountyClassifier().subscribe(res=>{
-      this.counties = res;
-    });
-
-
-
-
-
-
-
-
-
-    this.id = +(this.route.snapshot.paramMap.get('id'));
-
-    let obs$: Observable<ProjectModel> = null;
-
-    if (this.id < 0) {
-      obs$ = this.projectService.getNewProject();
-      this.project = new ProjectModel();
-      this.addForm();
-      this.newProject = true;
-      this.isReady = true;
-    } else if (this.projectService?.getProjectById(this.id) == undefined) {
-      this.idIncorrect = true;
-    } else {
-      this.projectService?.getProjectById(this.id);
-      this.projectService?.getProjectById(this.id)?.subscribe(res => {
-        // alert('Id incorrect');
-        this.project = res;
-        this.sectorsArr = this.project?.sectors;
-        this.locationsArr = this.project?.locations;
-        // console.log(this.project?.sectors);
-
-        this.addForm();
-        this.onDateChange();
-        this.updateProject = res.updateProject;
-        this.createProject = res.createProject;
-        // alert(this.createProject)
-
-        this.locationsPercentSumVal = this.locationsPercentSum();
-        this.isReady = true;
-      }, ErrorMethod.getError);
-
-
-    }
 
     // obs$.subscribe((res) => {
     //   // alert('Id incorrect');
