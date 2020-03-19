@@ -1,14 +1,7 @@
-import {AfterViewChecked, Component, DoCheck, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
-import {ProjectModel} from '../../model/project.model';
-import {Routes} from '@angular/router';
+import {Component, OnInit} from '@angular/core';
 import {ProjectViewModel} from '../../model/project-view.model';
-import {Observable, of} from 'rxjs';
 import {ErrorMethod} from '../util/errorMethod';
 import {ProjectService} from '../../services/project.service';
-import {tryReadFile} from 'tslint/lib/files/reading';
-import {MatSort} from '@angular/material/sort';
-import {MatTableDataSource} from '@angular/material/table';
-import {AadProjectLocationComponent} from '../aad-project-location/aad-project-location.component';
 import {MatDialog} from '@angular/material/dialog';
 import {DeleteProjectComponent} from '../delete-project/delete-project.component';
 
@@ -40,14 +33,12 @@ export class ProjectListComponent implements OnInit {
 
   deleteProject(id) {
     const dialogRef = this.dialog.open(DeleteProjectComponent, {
-      // width: '200px',
       data: {boolean: Boolean}
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.dummyProjectService.deleteProjectById(id).subscribe(res => {
-          // console.log(res);
           if (res.status) {
             this.ngOnInit();
           } else {

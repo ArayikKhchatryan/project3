@@ -1,11 +1,9 @@
-import {ProjectService} from '../project.service';
+import {ProjectService, Response} from '../project.service';
 import {ProjectModel} from '../../model/project.model';
 import {SectorModel} from '../../model/sector.model';
 import {Injectable} from '@angular/core';
 import {ProjectViewModel} from '../../model/project-view.model';
 import {Observable, of} from 'rxjs';
-import {Response} from '../project.service';
-import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {LocationModel} from '../../model/location.model';
 import {delay} from 'rxjs/operators';
 
@@ -29,11 +27,6 @@ export class DummyProjectService extends ProjectService {
     )];
 
   projectViewList: ProjectViewModel[] = [];
-  // [new ProjectViewModel(1, 'title1'), new ProjectViewModel(2, 'title2'), new ProjectViewModel(1, 'title3'),
-  // new ProjectViewModel(2, 'title4'),new ProjectViewModel(1, 'title5'),
-  // new ProjectViewModel(2, 'title6'),new ProjectViewModel(1, 'title7'), new ProjectViewModel(2, 'title8'), ];
-
-  // projectLocations: LocationModel[] = [];
 
   private getProjectViewList() {
     this.projectViewList = this.projectList.map(project => new ProjectViewModel(project.id, project.projectTitle));

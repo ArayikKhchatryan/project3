@@ -12,21 +12,21 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {ProjectListComponent} from './components/project-list/project-list.component';
 import {RouterModule, Routes} from '@angular/router';
-import {AddProjectComponent} from './components/add-project/add-project.component';
+import {ProjectComponent} from './components/project/project.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NotFoundComponent} from './components/not-found/not-found.component';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
-import { AadProjectLocationComponent } from './components/aad-project-location/aad-project-location.component';
+import {AadProjectLocationComponent} from './components/aad-project-location/aad-project-location.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {ProjectService} from './services/project.service';
 import {DummyProjectService} from './services/impl/dummy-project.service';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { DeleteProjectComponent } from './components/delete-project/delete-project.component';
+import {DeleteProjectComponent} from './components/delete-project/delete-project.component';
 
 const appRoutes: Routes = [
-  {path: 'projects/:id', component: AddProjectComponent},
+  {path: 'projects/:id', component: ProjectComponent},
   {path: 'projects', component: ProjectListComponent},
   {path: 'projects/add/location', component: AadProjectLocationComponent},
   {path: '**', redirectTo: 'projects'}
@@ -36,7 +36,7 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent,
     ProjectListComponent,
-    AddProjectComponent,
+    ProjectComponent,
     AadProjectLocationComponent,
     NotFoundComponent,
     AadProjectLocationComponent,

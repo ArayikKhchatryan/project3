@@ -28,25 +28,8 @@ export class ClassifierServiceService {
     new ChildClassifierModel(2, 2, 'Tver'), new ChildClassifierModel(2, 3, 'Stavropol'), new ChildClassifierModel(3, 1, 'California')]
 
 
-  getSectorName(_id): string{
-    for(let obj of this.sectors_classifier){
-      if(obj.id == _id){
-        return obj.name;
-      }
-    }
-  }
-
-  getCountyNameById(_id): string{
-    for(let obj of this.county_classifier){
-      if(obj.id == _id){
-        return obj.name;
-      }
-    }
-  }
-
-
   getDistricts(): Observable<ChildClassifierModel[]>{
-    return of(this.district_classifier);
+    return of(this.district_classifier).pipe(delay(3000));
   }
 
   getImpStatusClassifier(): Observable<ClassifiersModel[]>{
@@ -58,7 +41,7 @@ export class ClassifierServiceService {
   }
 
   getCountyClassifier(): Observable<ClassifiersModel[]>{
-    return of(this.county_classifier);
+    return of(this.county_classifier).pipe(delay(3000));
   }
 
   // getCountyes(): Observable<ClassifiersModel[]>{
@@ -76,4 +59,19 @@ export class ClassifierServiceService {
   // }
 
 
+  // getSectorName(_id): string{
+  //   for(let obj of this.sectors_classifier){
+  //     if(obj.id == _id){
+  //       return obj.name;
+  //     }
+  //   }
+  // }
+
+  // getCountyNameById(_id): string{
+  //   for(let obj of this.county_classifier){
+  //     if(obj.id == _id){
+  //       return obj.name;
+  //     }
+  //   }
+  // }
 }

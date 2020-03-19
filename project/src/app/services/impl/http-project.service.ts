@@ -1,9 +1,7 @@
-import {ProjectService} from '../project.service';
+import {ProjectService, Response} from '../project.service';
 import {ProjectModel} from '../../model/project.model';
 import {ProjectViewModel} from '../../model/project-view.model';
 import {Observable} from 'rxjs';
-import {Response} from '../project.service';
-import {LocationModel} from '../../model/location.model';
 
 export class HttpProjectService extends ProjectService{
 
