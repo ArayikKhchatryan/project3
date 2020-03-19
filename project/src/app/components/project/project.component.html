@@ -15,7 +15,7 @@
         <img src="assets/addProjectHeader.png" width="117%" height="150px">
       </div>
 
-      <div style="position:fixed;">
+      <div style="position:fixed;" *ngIf="!newProject">
         <div style="margin-left: 400px; margin-top: 17px; color: white">
           <h3 style="display: inline; font-size: 21px"> {{project.startDate | date}} - </h3>
           <pre style="display: inline; background-color: transparent; border: transparent"> </pre>
@@ -23,8 +23,10 @@
         </div>
         <br>
         <p style="color: white; font-size: 13px; margin-left: 400px">{{project.description}}</p>
-        <p style="color: white; font-size: 13px; margin-left: 400px" *ngIf="newDate">
-          update {{newDate | date :  'MM/dd/yyyy'}}</p>
+        <p style="color: white; font-size: 13px; margin-left: 400px" *ngIf="createProject">
+          create project {{createProject | date :  'MM/dd/yyyy'}}</p>
+        <p style="color: white; font-size: 13px; margin-left: 400px" *ngIf="updateProject">
+          update project {{updateProject | date :  'MM/dd/yyyy'}}</p>
       </div>
 
       <div style="position: fixed; margin-left: 1200px">
@@ -32,7 +34,8 @@
           style="background-color:  rgba(111, 172, 40, 1); " mat-button class="headerButton" routerLink="/projects">
           CANCEL
         </button>
-        <button mat-raised-button [disabled]="!form1.valid" [title]="form1.valid ? 'Save' : 'Fill all required fields'" class="headerButton" type="submit" (click)="saveProject()">
+        <button mat-raised-button [disabled]="!form1.valid" [title]="form1.valid ? 'Save' : 'Fill all required fields'"
+                class="headerButton" type="submit" (click)="saveProject()">
           SAVE
         </button>
 
@@ -234,7 +237,8 @@
       <div style="margin-top: 20px; width: 1100px">
         <h3 *ngIf="locationsArr.length == districts.length" style="color: green" class="alert alert-success">bolor
           marzery yntrvac en. tokosneri gumary havasar e {{locationsPercentSumVal}}:</h3>
-        <h3 *ngIf="locationsPercentSumVal == 100 && locationsArr.length != districts.length" style="color: green" class="alert alert-success">
+        <h3 *ngIf="locationsPercentSumVal == 100 && locationsArr.length != districts.length" style="color: green"
+            class="alert alert-success">
           tokosneri gumary havasar e 100:
         </h3>
       </div>

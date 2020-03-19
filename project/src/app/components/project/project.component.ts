@@ -28,6 +28,10 @@ export class ProjectComponent implements OnInit {
 
   id: number;
 
+  updateProject: Date;
+
+  createProject: Date;
+
   project: ProjectModel;
 
   form1;
@@ -64,6 +68,8 @@ export class ProjectComponent implements OnInit {
   bb: boolean = false;
 
   idIncorrect: boolean = false;
+
+  newProject: boolean = false;
 
   locationsPercentSumVal: number = 0;
 
@@ -120,6 +126,11 @@ export class ProjectComponent implements OnInit {
 
   ngOnInit(): void {
 
+
+
+
+
+    
     this.cs.getDistricts().subscribe(res => {
       this.districts = res;
     });
@@ -140,7 +151,15 @@ export class ProjectComponent implements OnInit {
       this.counties = res;
     });
 
-    this.id = Number(this.route.snapshot.paramMap.get('id'));
+
+
+
+
+
+
+
+
+    this.id = +(this.route.snapshot.paramMap.get('id'));
 
     let obs$: Observable<ProjectModel> = null;
 
@@ -148,6 +167,7 @@ export class ProjectComponent implements OnInit {
       obs$ = this.projectService.getNewProject();
       this.project = new ProjectModel();
       this.addForm();
+      this.newProject = true;
       this.isReady = true;
     } else if (this.projectService?.getProjectById(this.id) == undefined) {
       this.idIncorrect = true;
@@ -155,15 +175,16 @@ export class ProjectComponent implements OnInit {
       this.projectService?.getProjectById(this.id);
       this.projectService?.getProjectById(this.id)?.subscribe(res => {
         // alert('Id incorrect');
-
         this.project = res;
-        this.sectorsArr = this.project.sectors;
-        this.locationsArr = this.project.locations;
-        console.log(this.project.sectors);
+        this.sectorsArr = this.project?.sectors;
+        this.locationsArr = this.project?.locations;
+        // console.log(this.project?.sectors);
 
         this.addForm();
         this.onDateChange();
-        this.newDate = res.updateProject;
+        this.updateProject = res.updateProject;
+        this.createProject = res.createProject;
+        // alert(this.createProject)
 
         this.locationsPercentSumVal = this.locationsPercentSum();
         this.isReady = true;
@@ -182,7 +203,7 @@ export class ProjectComponent implements OnInit {
     //   this.addForm();
     //   this.onDateChange();
     //   this.isReady = true;
-    //   this.newDate = res.updateProject;
+    //   this.updateProject = res.updateProject;
     // });
   }
 
@@ -356,21 +377,23 @@ export class ProjectComponent implements OnInit {
   }
 
   saveProject() {
+    // this.updateProject = new Date();
     const obj = this.form1.value;
     this.project = new ProjectModel(obj.projectCode, obj.projectTitle, obj.description, obj.implementationStatus,
-      obj.startDate, obj.endDate, this.sectorsArr, this.locationsArr, this.newDate);
+      obj.startDate, obj.endDate, this.sectorsArr, this.locationsArr, this.updateProject);
 
+    this.newProject = false;
     if (this.id < 0) {
+      this.project.createProject = this.createProject = new Date();
       this.projectService.addProject(this.project);
     } else {
       this.project.id = this.id;
-      this.project.updateProject = this.newDate;
+      this.project.updateProject = this.updateProject = new Date();
+      alert(this.project.updateProject);
       this.projectService.updateProject(this.project);
     }
-    this.newDate = new Date();
   }
 
-  newDate;
 }
 
 
