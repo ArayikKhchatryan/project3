@@ -9,7 +9,7 @@
 
 <ng-container *ngIf="isReady">
   <form [formGroup]="form1">
-    <div name = "header" style="position: fixed; color: white; z-index: 1000">
+    <div name="header" style="position: fixed; color: white; z-index: 1000">
 
       <div style="position:fixed;">
         <img src="assets/addProjectHeader.png" width="117%" height="150px">
@@ -23,7 +23,8 @@
         </div>
         <br>
         <p style="color: white; font-size: 13px; margin-left: 400px">{{project.description}}</p>
-        <p style="color: white; font-size: 13px; margin-left: 400px" *ngIf="newDate">update {{newDate | date :  'MM/dd/yyyy'}}</p>
+        <p style="color: white; font-size: 13px; margin-left: 400px" *ngIf="newDate">
+          update {{newDate | date :  'MM/dd/yyyy'}}</p>
       </div>
 
       <div style="position: fixed; margin-left: 1200px">
@@ -31,7 +32,7 @@
           style="background-color:  rgba(111, 172, 40, 1); " mat-button class="headerButton" routerLink="/projects">
           CANCEL
         </button>
-        <button mat-raised-button [disabled]="!form1.valid" class="headerButton" type="submit" (click)="saveProject()">
+        <button mat-raised-button [disabled]="!form1.valid" [title]="form1.valid ? 'Save' : 'Fill all required fields'" class="headerButton" type="submit" (click)="saveProject()">
           SAVE
         </button>
 
@@ -44,7 +45,7 @@
 
     <div style="width: 500px; padding: 120px"></div>
 
-    <div name = "sample" class="sample">
+    <div name="sample" class="sample">
 
       <div
         style=" margin-left:  155px; background-color: white; width: 1240px; padding: 22px; font-family: 'Roboto'">
@@ -85,17 +86,17 @@
 
           <mat-form-field style="margin-left: 85px">
             <mat-label>Planned Start Date</mat-label>
-            <input matInput [matDatepicker]="picker"  formControlName="startDate" [(ngModel)]="form1.value.startDate"
+            <input matInput [matDatepicker]="picker" formControlName="startDate" [(ngModel)]="form1.value.startDate"
                    (dateChange)="onDateChange($event)" required>
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
 
-<!--          <p *ngIf="endDate > startDate">fghsfgsdgsd </p>-->
+          <!--          <p *ngIf="endDate > startDate">fghsfgsdgsd </p>-->
 
           <mat-form-field style="margin-left: 85px">
             <mat-label>Planned End Date</mat-label>
-            <input matInput [matDatepicker]="picker1"  formControlName="endDate" [(ngModel)]="form1.value.endDate"
+            <input matInput [matDatepicker]="picker1" formControlName="endDate" [(ngModel)]="form1.value.endDate"
                    (dateChange)="onDateChange($event)">
             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
             <mat-datepicker #picker1></mat-datepicker>
@@ -111,7 +112,7 @@
     </div>
 
 
-    <div name = "sectors" style="margin-top: 30px">
+    <div name="sectors" style="margin-top: 30px">
 
       <form [formGroup]="sectorsForm">
         <div
@@ -145,6 +146,17 @@
 
           </div>
 
+          <div style="margin-top: 20px; width: 750px">
+            <h3 *ngIf="sectors?.length && getPercentSum() == 100" style="color: green" class="alert alert-success">
+              yntrvac volortneri tokosneri gumary havasar e 100:</h3>
+            <h3 *ngIf="!sectors?.length && getPercentSum() <= 100" style="color: green" class="alert alert-success">
+              bolor hnaravor volortnery yntrvac en. axyusaki tokosneri gumary havasar e {{getPercentSum()}}:</h3>
+            <h3 *ngIf="aa" style="color: red" class="alert alert-danger">tokosneri gumary petq e poqr lini 100 ic. ayn
+              karox e linel havasar
+              (0:{{100 - +getPercentSum()}}) mijakayqic tvi</h3>
+            <h3 *ngIf="bb" style="color: red" class="alert alert-danger">tokos handisanum e miayn tiv (0:100)
+              mijakayqic</h3>
+          </div>
           <div style="margin-top: 20px" *ngIf="sectors?.length && getPercentSum() < 100">
 
             <mat-form-field>
@@ -167,9 +179,6 @@
                     (click)="deleteSectorName( sector.value, percent.value, true)">ADD
             </button>
 
-            <p *ngIf="aa" style="color: red" class="alert alert-danger">tokosneri gumary petq e poqr lini 100 ic. ayn karox e linel havasar
-              (0:{{100 - +getPercentSum()}}) mijakayqic tvi</p>
-            <p *ngIf="bb" style="color: red" class="alert alert-danger">tokos handisanum e miayn tiv (0:100) mijakayqic</p>
           </div>
         </div>
       </form>
@@ -177,8 +186,8 @@
 
     </div>
 
-    <div name = "locations"
-      style="margin-top: 34px; margin-left:  155px; background-color: white; width: 1240px; padding: 22px; margin-bottom: 140px">
+    <div name="locations"
+         style="margin-top: 34px; margin-left:  155px; background-color: white; width: 1240px; padding: 22px; margin-bottom: 140px">
       <p style="font-size: 16px">Project Locations (pop-up table)</p><br>
 
 
@@ -217,9 +226,18 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
       </table>
+      <div *ngIf="locationsArr.length != districts.length && locationsPercentSumVal < 100">
+        <button class="sectorButton" style="margin-left: 0; margin-top: 20px" mat-button (click)="openDialog()">ADD
+        </button>
+      </div>
 
-      <button class="sectorButton" style="margin-left: 0; margin-top: 20px" mat-button (click)="openDialog()">ADD</button>
-
+      <div style="margin-top: 20px; width: 1100px">
+        <h3 *ngIf="locationsArr.length == districts.length" style="color: green" class="alert alert-success">bolor
+          marzery yntrvac en. tokosneri gumary havasar e {{locationsPercentSumVal}}:</h3>
+        <h3 *ngIf="locationsPercentSumVal == 100 && locationsArr.length != districts.length" style="color: green" class="alert alert-success">
+          tokosneri gumary havasar e 100:
+        </h3>
+      </div>
     </div>
 
 

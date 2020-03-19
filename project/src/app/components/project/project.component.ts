@@ -13,23 +13,15 @@ import {ClassifiersModel} from '../../model/classifiers.model';
 import {DeleteProjectComponent} from '../delete-project/delete-project.component';
 import {Observable} from 'rxjs';
 import {MatDatepickerInputEvent} from '@angular/material/datepicker';
+import {ChildClassifierModel} from '../../model/child-classifier.model';
 
 
 @Component({
   selector: 'app-add-project',
-  templateUrl: './add-project.component.html',
-  styleUrls: ['./add-project.component.css']
+  templateUrl: './project.component.html',
+  styleUrls: ['./project.component.css']
 })
-export class AddProjectComponent implements OnInit {
-  get duration(): number {
-    return this._duration;
-  }
-
-  set duration(value: number) {
-    this._duration = value;
-    this.getEndDate();
-  }
-
+export class ProjectComponent implements OnInit {
   // constructor(private projectService: ProjectService) {
   // let id: number = 4; //todo vercnel rootingic
   // }
@@ -42,9 +34,9 @@ export class AddProjectComponent implements OnInit {
 
   imp_statuses: ClassifiersModel[];
 
-  sectors: any;
+  sectors: ClassifiersModel[] = [];
 
-  sectorsAll: any;
+  sectorsAll: ClassifiersModel[] = [];
 
   sectorsArr: SectorModel[] = [];
 
@@ -52,11 +44,6 @@ export class AddProjectComponent implements OnInit {
 
   private _duration: number = null;
 
-  aa: boolean = false;
-
-  bb: boolean = false;
-
-  idIncorrect: boolean = false;
 
   displayedColumns: string[] = ['a', 'b', 'x'];
 
@@ -66,15 +53,33 @@ export class AddProjectComponent implements OnInit {
   percent: number;
   districtId: string;
 
-  districts: any[] = [];
+  districts: ChildClassifierModel[] = [];
 
-  isReady: Boolean = false;
+  counties: ClassifiersModel[] = [];
+
+  isReady: boolean = false;
+
+  aa: boolean = false;
+
+  bb: boolean = false;
+
+  idIncorrect: boolean = false;
+
+  locationsPercentSumVal: number = 0;
 
   sectorsForm = this.fb.group({
     percent: new FormControl(),
     sector: new FormControl(),
   });
 
+  get duration(): number {
+    return this._duration;
+  }
+
+  set duration(value: number) {
+    this._duration = value;
+    this.getEndDate();
+  }
 
   constructor(private route?: ActivatedRoute, private projectService?: ProjectService, private cs?: ClassifierServiceService, private fb?: FormBuilder, public dialog?: MatDialog) {
 
@@ -104,21 +109,7 @@ export class AddProjectComponent implements OnInit {
     });
   }
 
-
-  getSectors(res) {
-    this.sectorsArr = [];
-    for (let i of res) {
-      for (let j of this.sectorsArr) {
-        if (i.sector != j.sector) {
-
-        }
-      }
-    }
-  }
-
-
   getDistrictNameById(_id: number, parentId?: number): string {
-    // alert(parentId);
     const dist = this.districts.find(district => district.id === _id && district.parentId === parentId);
     return dist ? dist.name : '';
   }
@@ -137,7 +128,6 @@ export class AddProjectComponent implements OnInit {
       this.sectors = this.sectorsAll = res;
       for (let i of this.sectorsArr) {
         this.deleteSectorName(i.sector, i.percent);
-        // alert(i.sector);
       }
     });
 
@@ -146,6 +136,9 @@ export class AddProjectComponent implements OnInit {
       this.imp_statuses = res;
     });
 
+    this.cs.getCountyClassifier().subscribe(res=>{
+      this.counties = res;
+    });
 
     this.id = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -170,9 +163,13 @@ export class AddProjectComponent implements OnInit {
 
         this.addForm();
         this.onDateChange();
-        this.isReady = true;
         this.newDate = res.updateProject;
+
+        this.locationsPercentSumVal = this.locationsPercentSum();
+        this.isReady = true;
       }, ErrorMethod.getError);
+
+
     }
 
     // obs$.subscribe((res) => {
@@ -192,7 +189,6 @@ export class AddProjectComponent implements OnInit {
 
   deleteSector(sectorId) {
     const dialogRef = this.dialog.open(DeleteProjectComponent, {
-      // width: '200px',
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -205,16 +201,11 @@ export class AddProjectComponent implements OnInit {
         }
         this.sectorsArr = sectors2;
 
-
         this.sectors = this.sectorsAll;
         for (let i of this.sectorsArr) {
           this.deleteSectorName(i.sector, i.percent);
         }
-
-
-        // alert(i.sector);
       }
-
     });
   }
 
@@ -223,33 +214,23 @@ export class AddProjectComponent implements OnInit {
       this.sectorsAdd();
     }
     if (sectorId && percent && percent > 0 && percent <= 100 && (+this.getPercentSum() + +this.sectorsForm.value.percent) < 100) {
-      // alert(sectorId);
       let sectors2 = [];
       for (let i of this.sectors) {
         if (i.id != sectorId) {
           sectors2.push(i);
-          // alert(i.id);
         }
       }
-      // this.sectors = null;
-      this.sectors = sectors2;
-      // console.log(this.sectors);
+       this.sectors = sectors2;
     }
   }
 
 
   sectorsAdd() {
-    // alert(+this.getPercentSum() + +this.sectorsForm.value.percent);
-    // alert(this.getPercentSum())
     if (this.sectorsForm.value.percent < 0 || this.sectorsForm.value.percent > 100 || (+this.getPercentSum() + +this.sectorsForm.value.percent) > 100 || !this.sectorsForm.value.sector) {
-      // alert(this.sectorsForm.value.percent < 0 || this.sectorsForm.value.percent > 100 && (this.getPercentSum() + this.sectorsForm.value.percent) > 100);
-      // alert(true)
       this.aa = true;
       this.bb = false;
 
-      // this.sectorsForm.invalid;
     } else if (this.sectorsForm.value.percent > 0 && this.sectorsForm.value.percent <= 100) {
-      // alert(false)
       this.sectorsArr = [this.sectorsForm.value, ...this.sectorsArr];
       this.sectorsForm.reset();
       this.aa = false;
@@ -260,41 +241,46 @@ export class AddProjectComponent implements OnInit {
     }
   }
 
-  getSectorName(sectorId: number) {
-    return this.cs.getSectorName(sectorId);
+
+  getSectorName(_id): string{
+    for(let obj of this.sectorsAll){
+      if(obj.id == _id){
+        return obj.name;
+      }
+    }
   }
 
-  getCountyNameById(countyId: number) {
-    return this.cs.getCountyNameById(countyId);
-  }
-
-
-  // getCountyNameById(_id): string{
-  //   for(let obj of this.county_classifier){
-  //     if(obj.id == _id){
-  //       return obj.name;
-  //     }
-  //   }
+  //
+  // getCountyNameById(countyId: number) {
+  //   return this.cs.getCountyNameById(countyId);
   // }
 
+
+  getCountyNameById(_id): string{
+    for(let obj of this.counties){
+      if(obj.id == _id){
+        return obj.name;
+      }
+    }
+  }
+
+  locationsPercentSum(): number {
+    // alert(+this.locationsArr.reduce((previousValue, item) => +previousValue + +item.percent, 0))
+    return +this.locationsArr.reduce((previousValue, item) => +previousValue + +item.percent, 0);
+  }
 
   openDialog(): void {
     const dialogRef = this.dialog.open(AadProjectLocationComponent, {
       width: '400px',
-      data: {locations: this.locationsArr, districts: this.districts}
+      data: {locations: this.locationsArr, districts: this.districts, counties: this.counties, locationsPercentSum: this.locationsPercentSumVal}
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      // alert(result);
       if (result.countyId && result.districtId && result.percent) {
-        // this.locationsArr.push(result);
         this.locationsArr = [result, ...this.locationsArr];
-        console.log(this.locationsArr);
-        // console.log('-----------------------');
-        // console.log(this.locationsArr);
       }
+      this.locationsPercentSumVal = this.locationsPercentSum();
     });
-    // dialogRef.disableClose = true;
   }
 
 
@@ -334,8 +320,6 @@ export class AddProjectComponent implements OnInit {
         this.form1.value.endDate.setDate(Number(this.form1.value.startDate.getDate()) + Number(this._duration) - 1);
         this.project.endDate = this.form1.value.endDate;
       } else {
-        // this.project.endDate = null;
-        // this.project.startDate = null;
         this.form1.value.stratDate = null;
         this.form1.value.endDate = null;
         this.duration = null;
@@ -367,37 +351,19 @@ export class AddProjectComponent implements OnInit {
           }
         }
         this.locationsArr = locations2;
-
-
-        // this.sectors = this.sectorsAll;
-        // for (let i of this.sectorsArr) {
-        //   this.deleteSectorName(i.sector, i.percent);
-        // }
-
       }
-
     });
-
   }
-
 
   saveProject() {
     const obj = this.form1.value;
-    this.project = new ProjectModel(obj.projectCode, obj.projectTitle, obj.description, obj.implementationStatus, obj.startDate, obj.endDate, this.sectorsArr, this.locationsArr, this.newDate);
+    this.project = new ProjectModel(obj.projectCode, obj.projectTitle, obj.description, obj.implementationStatus,
+      obj.startDate, obj.endDate, this.sectorsArr, this.locationsArr, this.newDate);
 
     if (this.id < 0) {
-      // console.log(this.project);
-      // this.project  = this.form1.value;
-      // // this.project.id = 2;
-      // this.projectService.getProjects().subscribe(res => {
-      //   console.log(res.length);
-      //   this.project.id = res.length;
-      // });
-      // this.project.sectors = this.sectorsArr;
       this.projectService.addProject(this.project);
     } else {
       this.project.id = this.id;
-      // this.project?.newDate = this.newDate;
       this.project.updateProject = this.newDate;
       this.projectService.updateProject(this.project);
     }
