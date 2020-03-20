@@ -16,6 +16,9 @@ export class ProjectListComponent implements OnInit {
 
   isReady: Boolean = false;
 
+  captureSrc = "../assets/Capture.png";
+
+
   constructor(private dummyProjectService: ProjectService, public dialog?: MatDialog) {
   }
 

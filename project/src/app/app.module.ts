@@ -24,13 +24,7 @@ import {ProjectService} from './services/project.service';
 import {DummyProjectService} from './services/impl/dummy-project.service';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {DeleteProjectComponent} from './components/delete-project/delete-project.component';
-
-const appRoutes: Routes = [
-  {path: 'projects/:id', component: ProjectComponent},
-  {path: 'projects', component: ProjectListComponent},
-  {path: 'projects/add/location', component: AadProjectLocationComponent},
-  {path: '**', redirectTo: 'projects'}
-];
+import {routes} from './app-routing.module'
 
 @NgModule({
   declarations: [
@@ -53,7 +47,7 @@ const appRoutes: Routes = [
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    RouterModule.forRoot(appRoutes),
+    RouterModule.forRoot(routes),
     ReactiveFormsModule,
     MatSelectModule,
     MatDialogModule,

@@ -72,6 +72,8 @@ export class ProjectComponent implements OnInit {
 
   locationsPercentSumVal: number = 0;
 
+  projectHeader = "assets/addProjectHeader.png";
+
   sectorsForm = this.fb.group({
     percent: new FormControl(),
     sector: new FormControl(),
