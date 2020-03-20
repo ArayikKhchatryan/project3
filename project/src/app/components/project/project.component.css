@@ -49,6 +49,10 @@ mat-icon {
   cursor: pointer;
 }
 
+.ng-invalid:not(form1)  {
+  border-left: 5px solid #a94442; /* red */
+}
+
 
 /*input.ng-touched.ng-invalid {border:solid red 1px;}*/
 /*input.ng-touched.ng-valid {border:solid green 1px;}*/

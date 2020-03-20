@@ -35,7 +35,7 @@
           CANCEL
         </button>
         <button mat-raised-button  [title]="form1.valid ? 'Save' : 'Fill all required fields'"
-                class="headerButton" type="submit" (click)="saveProject(form1.valid)">
+                class="headerButton" type="submit" (click)="saveProject(form1.valid, form1.touched)">
           SAVE
         </button>
 

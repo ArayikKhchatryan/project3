@@ -331,9 +331,9 @@ export class ProjectComponent implements OnInit {
     });
   }
 
-  saveProject(formValid?: boolean) {
+  saveProject(formValid?: boolean, pristine?: boolean) {
     // alert(formValid)
-    if (formValid) {
+    if (formValid && pristine) {
       // this.updateProject = new Date();
       const obj = this.form1.value;
       this.project = new ProjectModel(obj.projectCode, obj.projectTitle, obj.description, obj.implementationStatus,
