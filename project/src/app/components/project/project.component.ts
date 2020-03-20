@@ -1,17 +1,16 @@
-import {Component, OnInit, Output} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {ProjectModel} from '../../model/project.model';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {ClassifierServiceService} from '../../services/classifier-service.service';
 import {SectorModel} from '../../model/sector.model';
-import {ErrorMethod} from '../util/errorMethod';
 import {AadProjectLocationComponent} from '../aad-project-location/aad-project-location.component';
 import {MatDialog} from '@angular/material/dialog';
 import {ProjectService} from '../../services/project.service';
 import {LocationModel} from '../../model/location.model';
 import {ClassifiersModel} from '../../model/classifiers.model';
 import {DeleteProjectComponent} from '../delete-project/delete-project.component';
-import {Observable, of, zip} from 'rxjs';
+import {of, zip} from 'rxjs';
 import {MatDatepickerInputEvent} from '@angular/material/datepicker';
 import {ChildClassifierModel} from '../../model/child-classifier.model';
 
