@@ -24,7 +24,8 @@ import {ProjectService} from './services/project.service';
 import {DummyProjectService} from './services/impl/dummy-project.service';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {DeleteProjectComponent} from './components/delete-project/delete-project.component';
-import {routes} from './app-routing.module'
+import {routes} from './app-routing.module';
+import { DontSavedComponent } from './components/dont-saved/dont-saved.component'
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import {routes} from './app-routing.module'
     AadProjectLocationComponent,
     NotFoundComponent,
     AadProjectLocationComponent,
-    DeleteProjectComponent
+    DeleteProjectComponent,
+    DontSavedComponent
   ],
   imports: [
     BrowserModule,

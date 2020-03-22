@@ -61,14 +61,14 @@ export class DummyProjectService extends ProjectService {
   addProject(project: ProjectModel): Observable<Response> {
     return of(null).pipe(map(() => {
       if(this.uniqueName(project.projectTitle)) {
-        // this.projectList.push(project);
-        alert(project.projectTitle);
-        alert(this.uniqueName(project.projectTitle));
+        // // this.projectList.push(project);
+        // alert(project.projectTitle);
+        // alert(this.uniqueName(project.projectTitle));
         this.projectList.push(project);
         return new Response(true, null, project.id);
       }
-      alert(project.projectTitle);
-      alert(this.uniqueName(project.projectTitle));
+      // alert(project.projectTitle);
+      // alert(this.uniqueName(project.projectTitle));
       return new Response(false);
     }), delay(2000));
   }
@@ -84,17 +84,22 @@ export class DummyProjectService extends ProjectService {
 
   }
 
-  updateProject(id: number, project: ProjectModel): Observable<Response> {
+  updateProject(id: number, project: ProjectModel, newProjectTitle?: boolean): Observable<Response> {
     return of(null).pipe(map(() => {
-      project.id = id;
-      //poxel
-      for (let x = 0; x < this.projectList.length; x++) {
-        if (this.projectList[x].id === id) {
-          this.projectList[x] = project;
+      if(this.uniqueName(project.projectTitle) || !newProjectTitle) {
+        project.id = id;
+        //poxel
+        for (let x = 0; x < this.projectList.length; x++) {
+          if (this.projectList[x].id === id) {
+            this.projectList[x] = project;
+          }
         }
-      }
 
-      return new Response(true);
+        return new Response(true);
+      }
+      else{
+        return new Response(false);
+      }
     }), delay(2000));
   }
 

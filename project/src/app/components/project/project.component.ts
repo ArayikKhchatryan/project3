@@ -13,6 +13,7 @@ import {DeleteProjectComponent} from '../delete-project/delete-project.component
 import {Observable, of, zip} from 'rxjs';
 import {MatDatepickerInputEvent} from '@angular/material/datepicker';
 import {ChildClassifierModel} from '../../model/child-classifier.model';
+import {DontSavedComponent} from '../dont-saved/dont-saved.component';
 
 
 @Component({
@@ -365,9 +366,12 @@ export class ProjectComponent implements OnInit {
     });
   }
 
+  newProjectTitle: boolean;
+
   saveProject() {
     // this.updateProject = new Date();
     const obj = this.form1.value;
+    this.newProjectTitle = this.project.projectTitle != obj.projectTitle;
     this.project = new ProjectModel(obj.projectCode, obj.projectTitle, obj.description, obj.implementationStatus,
       obj.startDate, obj.endDate, this.sectorsArr, this.locationsArr, this.updateProject);
 
@@ -378,7 +382,7 @@ export class ProjectComponent implements OnInit {
     } else {
 
       // alert(this.project.updateProject);
-      x = this.projectService.updateProject(this.id, this.project);
+      x = this.projectService.updateProject(this.id, this.project, this.newProjectTitle);
     }
     x.subscribe(res => {
       if (res.status) {
@@ -386,13 +390,19 @@ export class ProjectComponent implements OnInit {
         if (this.newProject) {
           // if (this.newProject && this.uniqueName(this.form1.value.projectTitle)) {
           //   alert(this.uniqueName(this.form1.value.projectTitle));
+
+          this.project.createProject = this.createProject = new Date();
+          this.newProject = false;
+          this.id = res.newId;
+          // }
+        } else {
+          this.project.updateProject = this.updateProject = new Date();
         }
-        this.project.createProject = this.createProject = new Date();
-        this.newProject = false;
-        this.id = res.newId;
-      } else if (this.newProject) {
-        // alert(this.uniqueName(this.form1.value.projectTitle));
-        this.project.updateProject = this.updateProject = new Date();
+      }
+      else {
+        const dialogRef = this.dialog.open(DontSavedComponent, {
+          width: '400px',
+        });
       }
     }, err => {
       console.log(err);
