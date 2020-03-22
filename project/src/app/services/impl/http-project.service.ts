@@ -22,7 +22,7 @@ export class HttpProjectService extends ProjectService{
     return undefined;
   }
 
-  updateProject(project: ProjectModel): Observable<Response> {
+  updateProject(id: number, project: ProjectModel): Observable<Response> {
     return undefined;
   }
 

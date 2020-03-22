@@ -107,7 +107,7 @@
 
           <mat-form-field style=" margin-left: 85px">
             <mat-label>Duration</mat-label>
-            <input matInput [(ngModel)]="duration" [ngModelOptions]="{standalone: true}">
+            <input matInput [(ngModel)]="duration" [ngModelOptions]="{standalone: true}" (click)="getStartAndEndDate()">
           </mat-form-field>
 
         </div>

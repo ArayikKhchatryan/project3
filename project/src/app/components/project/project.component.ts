@@ -6,11 +6,11 @@ import {ClassifierServiceService} from '../../services/classifier-service.servic
 import {SectorModel} from '../../model/sector.model';
 import {AadProjectLocationComponent} from '../aad-project-location/aad-project-location.component';
 import {MatDialog} from '@angular/material/dialog';
-import {ProjectService} from '../../services/project.service';
+import {ProjectService, Response} from '../../services/project.service';
 import {LocationModel} from '../../model/location.model';
 import {ClassifiersModel} from '../../model/classifiers.model';
 import {DeleteProjectComponent} from '../delete-project/delete-project.component';
-import {of, zip} from 'rxjs';
+import {Observable, of, zip} from 'rxjs';
 import {MatDatepickerInputEvent} from '@angular/material/datepicker';
 import {ChildClassifierModel} from '../../model/child-classifier.model';
 
@@ -72,7 +72,7 @@ export class ProjectComponent implements OnInit {
 
   locationsPercentSumVal: number = 0;
 
-  projectHeader = "assets/addProjectHeader.png";
+  projectHeader = 'assets/addProjectHeader.png';
 
   sectorsForm = this.fb.group({
     percent: new FormControl(),
@@ -110,8 +110,8 @@ export class ProjectComponent implements OnInit {
 
 
       // sectorsForm: this.fb.group({
-      //   percent: [''],
-      //   sector: [undefined],
+      //   percent: [],
+      //   sector: [],
       // }),
     });
   }
@@ -125,6 +125,8 @@ export class ProjectComponent implements OnInit {
     return this.sectorsArr.reduce((previousValue, item) => +previousValue + +item.percent, 0);
   }
 
+  projectsList: ProjectModel[];
+
   ngOnInit(): void {
 
 
@@ -132,37 +134,41 @@ export class ProjectComponent implements OnInit {
     this.newProject = this.id < 1;
 
     zip(this.cs.getDistricts(), this.cs.getSectorsClassifier(), this.cs.getImpStatusClassifier(), this.cs.getCountyClassifier(),
-      this.newProject ? of(new ProjectModel()) : this.projectService?.getProjectById(this.id)).subscribe(res => {
+      this.newProject ? of(new ProjectModel()) : this.projectService?.getProjectById(this.id))
+      // , this.projectService.getProjects())
+      .subscribe(res => {
 
-      this.districts = res[0];
+        // this.projectsList = res[5];
 
-      this.sectors = this.sectorsAll = res[1];
+        this.districts = res[0];
 
-      this.imp_statuses = res[2];
+        this.sectors = this.sectorsAll = res[1];
 
-      this.counties = res[3];
+        this.imp_statuses = res[2];
 
-      this.project = res[4];
+        this.counties = res[3];
 
-      if (!this.project) {
-        this.idIncorrect = true;
-      } else {
-        this.addForm();
-        if (!this.newProject) {
-          this.sectorsArr = this.project?.sectors;
-          for (let i of this.sectorsArr) {
-            this.deleteSectorName(i.sector, i.percent);
+        this.project = res[4];
+
+        if (!this.project) {
+          this.idIncorrect = true;
+        } else {
+          this.addForm();
+          if (!this.newProject) {
+            this.sectorsArr = this.project?.sectors;
+            for (let i of this.sectorsArr) {
+              this.deleteSectorName(i.sector, i.percent);
+            }
+            this.locationsArr = this.project?.locations;
+            this.onDateChange();
+            this.updateProject = res[4].updateProject;
+            this.createProject = res[4].createProject;
+            this.locationsPercentSumVal = this.locationsPercentSum();
           }
-          this.locationsArr = this.project?.locations;
-          this.onDateChange();
-          this.updateProject = res[4].updateProject;
-          this.createProject = res[4].createProject;
-          this.locationsPercentSumVal = this.locationsPercentSum();
-        }
 
-        this.isReady = true;
-      }
-    });
+          this.isReady = true;
+        }
+      });
 
 
     // obs$.subscribe((res) => {
@@ -181,8 +187,7 @@ export class ProjectComponent implements OnInit {
 
 
   deleteSector(sectorId) {
-    const dialogRef = this.dialog.open(DeleteProjectComponent, {
-    });
+    const dialogRef = this.dialog.open(DeleteProjectComponent, {});
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -213,7 +218,7 @@ export class ProjectComponent implements OnInit {
           sectors2.push(i);
         }
       }
-       this.sectors = sectors2;
+      this.sectors = sectors2;
     }
   }
 
@@ -235,9 +240,9 @@ export class ProjectComponent implements OnInit {
   }
 
 
-  getSectorName(_id): string{
-    for(let obj of this.sectorsAll){
-      if(obj.id == _id){
+  getSectorName(_id): string {
+    for (let obj of this.sectorsAll) {
+      if (obj.id == _id) {
         return obj.name;
       }
     }
@@ -249,9 +254,9 @@ export class ProjectComponent implements OnInit {
   // }
 
 
-  getCountyNameById(_id): string{
-    for(let obj of this.counties){
-      if(obj.id == _id){
+  getCountyNameById(_id): string {
+    for (let obj of this.counties) {
+      if (obj.id == _id) {
         return obj.name;
       }
     }
@@ -265,7 +270,12 @@ export class ProjectComponent implements OnInit {
   openDialog(): void {
     const dialogRef = this.dialog.open(AadProjectLocationComponent, {
       width: '400px',
-      data: {locations: this.locationsArr, districts: this.districts, counties: this.counties, locationsPercentSum: this.locationsPercentSumVal}
+      data: {
+        locations: this.locationsArr,
+        districts: this.districts,
+        counties: this.counties,
+        locationsPercentSum: this.locationsPercentSumVal
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -330,6 +340,13 @@ export class ProjectComponent implements OnInit {
     }
   }
 
+  getStartAndEndDate() {
+    if (!this.form1.value.startDate && !this.form1.value.endDate) {
+      this.form1.value.startDate = new Date();
+      this.getEndDate();
+    }
+  }
+
   deleteLocation(countyId: number, districtId: number) {
     const dialogRef = this.dialog.open(DeleteProjectComponent, {
       data: {boolean: Boolean}
@@ -354,18 +371,41 @@ export class ProjectComponent implements OnInit {
     this.project = new ProjectModel(obj.projectCode, obj.projectTitle, obj.description, obj.implementationStatus,
       obj.startDate, obj.endDate, this.sectorsArr, this.locationsArr, this.updateProject);
 
-    this.newProject = false;
-    if (this.id < 0) {
-      this.project.createProject = this.createProject = new Date();
-      this.projectService.addProject(this.project);
+    let x: Observable<Response>;
+    if (this.newProject) {
+
+      x = this.projectService.addProject(this.project);
     } else {
-      this.project.id = this.id;
-      this.project.updateProject = this.updateProject = new Date();
-      alert(this.project.updateProject);
-      this.projectService.updateProject(this.project);
+
+      // alert(this.project.updateProject);
+      x = this.projectService.updateProject(this.id, this.project);
     }
+    x.subscribe(res => {
+      if (res.status) {
+        // routerLink="/projects"
+        if (this.newProject) {
+          // if (this.newProject && this.uniqueName(this.form1.value.projectTitle)) {
+          //   alert(this.uniqueName(this.form1.value.projectTitle));
+        }
+        this.project.createProject = this.createProject = new Date();
+        this.newProject = false;
+        this.id = res.newId;
+      } else if (this.newProject) {
+        // alert(this.uniqueName(this.form1.value.projectTitle));
+        this.project.updateProject = this.updateProject = new Date();
+      }
+    }, err => {
+      console.log(err);
+    });
   }
 
+  // uniqueName(name: string) {
+  //   this.projectsList.find((project) => project.projectTitle == name);
+  //   if (!name) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 }
 
 

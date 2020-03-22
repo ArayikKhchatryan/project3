@@ -15,7 +15,7 @@ export abstract class ProjectService {
 
   abstract deleteProjectById(id: number): Observable<Response> ;
 
-  abstract updateProject(project: ProjectModel):  Observable<Response>;
+  abstract updateProject(id: number, project: ProjectModel):  Observable<Response>;
 
   // abstract addLocation(location: LocationModel): Observable<Response>;
 

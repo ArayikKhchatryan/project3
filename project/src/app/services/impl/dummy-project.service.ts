@@ -5,7 +5,7 @@ import {Injectable} from '@angular/core';
 import {ProjectViewModel} from '../../model/project-view.model';
 import {Observable, of} from 'rxjs';
 import {LocationModel} from '../../model/location.model';
-import {delay} from 'rxjs/operators';
+import {delay, map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +28,8 @@ export class DummyProjectService extends ProjectService {
 
   projectViewList: ProjectViewModel[] = [];
 
+  // getProjectViewList()
+
   private getProjectViewList() {
     this.projectViewList = this.projectList.map(project => new ProjectViewModel(project.id, project.projectTitle));
   }
@@ -47,9 +49,28 @@ export class DummyProjectService extends ProjectService {
     return of(this.projectViewList).pipe(delay(2000));
   }
 
+
+  uniqueName(name: string) {
+    return !this.projectList.find((project) => project.projectTitle == name);
+    // if (!name) {
+    //   return true;
+    // }
+    // return false;
+  }
+
   addProject(project: ProjectModel): Observable<Response> {
-    this.projectList.push(project);
-    return of(new Response(true, null, 1)).pipe(delay(2000));
+    return of(null).pipe(map(() => {
+      if(this.uniqueName(project.projectTitle)) {
+        // this.projectList.push(project);
+        alert(project.projectTitle);
+        alert(this.uniqueName(project.projectTitle));
+        this.projectList.push(project);
+        return new Response(true, null, project.id);
+      }
+      alert(project.projectTitle);
+      alert(this.uniqueName(project.projectTitle));
+      return new Response(false);
+    }), delay(2000));
   }
 
   deleteProjectById(id: number): Observable<Response> {
@@ -63,15 +84,26 @@ export class DummyProjectService extends ProjectService {
 
   }
 
-  updateProject(project: ProjectModel): Observable<Response> {
-    this.deleteProjectById(project.id);
-    this.addProject(project);
-    return of(new Response(true)).pipe(delay(2000));
+  updateProject(id: number, project: ProjectModel): Observable<Response> {
+    return of(null).pipe(map(() => {
+      project.id = id;
+      //poxel
+      for (let x = 0; x < this.projectList.length; x++) {
+        if (this.projectList[x].id === id) {
+          this.projectList[x] = project;
+        }
+      }
+
+      return new Response(true);
+    }), delay(2000));
   }
 
   getNewProject(): Observable<ProjectModel> {
     return of(new ProjectModel()).pipe(delay(2000));
   }
+
+
+
 
   // addLocation(location: LocationModel): Observable<Response> {
   //   this.projectLocations.push(location);
